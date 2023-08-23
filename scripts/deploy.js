@@ -6,22 +6,19 @@
 // global scope, and execute the script.
 const hre = require("hardhat")
 const { items } = require("../src/items.json")
+const { ethers } = require("hardhat")
 
 const tokens = (n) => {
-  return ethers.utils.parseUnits(n.toString(), 'ether');
+  return ethers.utils.parseUnits(n.toString(), 'ether')
 }
 
 async function main() {
-  // Setup Accounts
-  const [deployer] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners()
+  const Dappazon = await hre.ethers.getContractFactory("Dappazon")
+  const dappazon = await Dappazon.deploy()
+  await dappazon.deployed()
 
-  // Deploy DApp
-  const Dappazon = await ethers.getContractFactory("Dappazon");
-  const dappazon = await Dappazon.deploy();
-  await dappazon.deployed();
-  console.log("dApp deployed to:", dappazon.address);
-
-  // List Items
+  console.log(`Dappazon Contract at:${dappazon.address}\n`)
   for (let i = 0; i < items.length; i++) {
     const transaction = await dappazon.connect(deployer).list(
       items[i].id,
@@ -30,10 +27,12 @@ async function main() {
       items[i].image,
       tokens(items[i].price),
       items[i].rating,
-      items[i].stock
-    );
-    await transaction.wait();
-    console.log(`Listed item ${items[i].id}: ${items[i].name}`);
+      items[i].stock,
+    )
+
+    await transaction.wait()
+
+    console.log(`Listed item ${items[i].id}: ${items[i].name}`)
   }
 }
 
