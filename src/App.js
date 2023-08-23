@@ -13,7 +13,6 @@ import Dappazon from './abis/Dappazon.json'
 import config from './config.json'
 
 function App() {
-
   const [provider, setProvider] = useState(null)
   const [dappazon, setDappazon] = useState(null)
   const [account, setAccount] = useState(null)
@@ -40,12 +39,14 @@ function App() {
     console.log('Dappazon:', dappazon);
 
     const items = [];
+    const totalItems = await dappazon.getItemCount();
+    console.log('Total Items:', totalItems.toNumber());
 
-    for (var i = 0; i < 9; i++) {
-      const item = await dappazon.items(i + 1)
+    for (var i = 1; i <= totalItems; i++) {
+      const item = await dappazon.items(i)
       items.push(item)
     }
-
+    console.log('Items:', items);
     const electronics = items.filter((item) => item.category === 'electronics');
     const clothing = items.filter((item) => item.category === 'clothing');
     const toys = items.filter((item) => item.category === 'toys');
@@ -56,6 +57,36 @@ function App() {
 
   }
 
+  const addItemHandler = async() => {
+    let bigNumber = await dappazon.getItemCount()
+    let _id = bigNumber.toNumber() + 1;
+    const item = {
+      "id": _id,
+      "name": "Laptop",
+      "category": "electronics",
+      "image": "https://ipfs.io/ipfs/QmTYEboq8raiBs7GTUg2yLXB3PMz6HuBNgNfSZBx5Msztg/camera.jpg",
+      "price": "1.25",
+      "rating": 5,
+      "stock": 5
+    }
+    console.log(item)
+    try {
+      const transaction = await dappazon.connect(provider.getSigner()).list(
+        item.id,
+        item.name,
+        item.category,
+        item.image,
+        ethers.utils.parseUnits(item.price.toString(), 'ether'),
+        item.rating,
+        item.stock
+      )
+      await transaction.wait()
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }
+
   useEffect(() => {
     loadBlockchainData();
   }, [])
@@ -64,6 +95,7 @@ function App() {
     <div>
       <Navigation account={account} setAccount={setAccount} />
       <h2>Dappazon Best Seller</h2>
+      <div className='button_container'><button type='button' className='add_item_button' onClick={addItemHandler}>Add Item</button></div>
       {electronics && clothing && toys && (
         <>
           <Section title={"Clothing & Jewelry"} items={clothing} togglePop={togglePop} />

@@ -3,13 +3,15 @@ pragma solidity ^0.8.9;
 
 contract Dappazon {
     address public owner;
-
+    uint256 public itemCount;
     constructor() {
         owner = msg.sender;
+        itemCount = 0;
     }
 
     struct Item {
         uint256 id;
+        address owner;
         string name;
         string category;
         string image;
@@ -29,11 +31,7 @@ contract Dappazon {
     
     event List(string name, uint256 cost, uint256 stock);
     event Buy(address buyer, uint256 orderId, uint256 itemId); 
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
+    event GetItemCount();
 
     // List of products
     function list(
@@ -44,9 +42,10 @@ contract Dappazon {
         uint256 _cost,
         uint256 _rating,
         uint256 _stock
-    ) public onlyOwner(){
+    ) public {
         Item memory item = Item(
             _id,
+            msg.sender,
             _name,
             _category,
             _image,
@@ -55,7 +54,7 @@ contract Dappazon {
             _stock
         );
         items[_id] = item;
-
+        itemCount += 1;
         // Emit Event
         emit List(_name, _cost, _stock);
     }
@@ -71,6 +70,12 @@ contract Dappazon {
         // Require Item in Stock
         require(item.stock > 0);
 
+        payable(item.owner).transfer(item.cost);
+
+        if(msg.value > item.cost) {
+            payable(msg.sender).transfer(msg.value - item.cost);
+        }
+
         // Create Order
         Order memory order = Order(block.timestamp, item);
 
@@ -85,9 +90,7 @@ contract Dappazon {
         emit Buy(msg.sender, orderCount[msg.sender], item.id);
     }
 
-    // Withdraw Funds
-    function withdraw() public onlyOwner() {
-        (bool success, ) = owner.call{value: address(this).balance}("");
-        require(success);
+    function getItemCount() public view returns(uint256){
+        return itemCount;
     }
 }
