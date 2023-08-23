@@ -320,6 +320,30 @@ a.title {
   color: whitesmoke
 }
 
+.button_container {
+  text-align: center;
+}
+
+.add_item_button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 100px 200px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 64px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition-duration: 0.4s;
+}
+
+.add_item_button:hover {
+  background-color: #45a049;
+  color: white;
+}
+
 @media screen and (max-width: 992px) {
   .product__details {
     height: 95%;
