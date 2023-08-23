@@ -315,6 +315,11 @@ nav {
   border: 1px solid var(--clr-grey);
 }
 
+a.title {
+  text-decoration: none;
+  color: whitesmoke
+}
+
 @media screen and (max-width: 992px) {
   .product__details {
     height: 95%;
