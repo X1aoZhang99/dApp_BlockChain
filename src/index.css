@@ -320,6 +320,30 @@ a.title {
   color: whitesmoke
 }
 
+.button_container {
+  text-align: center;
+}
+
+.add_item_button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 100px 200px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 64px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition-duration: 0.4s;
+}
+
+.add_item_button:hover {
+  background-color: #45a049;
+  color: white;
+}
+
 @media screen and (max-width: 992px) {
   .product__details {
     height: 95%;
@@ -357,4 +381,68 @@ a.title {
   .product__image {
     grid-column: span 2;
   }
+}
+
+.popup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* optional background overlay */
+  position: fixed; /* make it overlay the whole screen */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: 16px;
+}
+
+.popup_inner {
+  width: 20%;
+  padding: 20px;
+  background-color: #fff;
+  position: relative;
+  text-align: center;
+  margin: 10% auto;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px #000;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+  margin-left: 60px;
+}
+
+.label {
+  width: 65px;
+  text-align: right;
+  margin-right: 10px;
+}
+
+.input {
+  width: 70%
+}
+
+.submit_button{
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 20px 50px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition-duration: 0.4s;
+}
+
+.product__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
 }

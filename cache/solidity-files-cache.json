@@ -4,6 +4,7 @@
     "/Users/shelton/Documents/my-class/Sideproject/web3/dApp_BlockChain/contracts/Dappazon.sol": {
       "lastModificationDate": 1692826282729,
       "contentHash": "e120570e0fe0b64b9680a4456af2a1cc",
+
       "sourceName": "contracts/Dappazon.sol",
       "solcConfig": {
         "version": "0.8.18",

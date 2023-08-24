@@ -18,11 +18,11 @@ const STOCK = 5;
 
 describe("Dappazon", () => {
   let dappazon
-  let deployer, buyer
+  let deployer, lister, buyer
 
   beforeEach(async () => {
     // Setup accounts
-    [deployer, buyer] = await ethers.getSigners()
+    [deployer, lister, buyer] = await ethers.getSigners()
 
     // Deploy contract
     const Dappazon = await ethers.getContractFactory("Dappazon")
@@ -39,13 +39,14 @@ describe("Dappazon", () => {
     let transaction;
     
     beforeEach(async () => {
-      transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK)
+      transaction = await dappazon.connect(lister).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK)
       await transaction.wait()
     })
     it("Returns item attributes", async () => {
       const item = await dappazon.items(1);
       
       expect(item.id).to.equal(ID)
+      expect(item.owner).to.equal(lister.address)
       expect(item.name).to.equal(NAME)
       expect(item.category).to.equal(CATEGORY)
       expect(item.image).to.equal(IMAGE)
@@ -64,11 +65,12 @@ describe("Dappazon", () => {
 
     beforeEach(async () => {
       // List an item
-      transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK);
+      transaction = await dappazon.connect(lister).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK);
       await transaction.wait();
 
       // Buy an item
       transaction = await dappazon.connect(buyer).buy(ID, { value: COST });
+      
     });
 
     it("Updates buyer's order count", async () => {
@@ -84,43 +86,25 @@ describe("Dappazon", () => {
     });
 
     it("Updates the contract balance", async () => {
-      const result = await ethers.provider.getBalance(dappazon.address);
-      expect(result).to.equal(COST);
+      const initialBalance = await ethers.provider.getBalance(lister.address);
+
+      // List an item
+      const listTx = await dappazon.connect(lister).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK);
+      const listReceipt = await listTx.wait();
+      const listGasUsed = listReceipt.gasUsed.mul(listReceipt.effectiveGasPrice);
+
+      // Buy an item
+      await dappazon.connect(buyer).buy(ID, { value: COST });
+
+      const finalBalance = await ethers.provider.getBalance(lister.address);
+      const expectedBalance = initialBalance.add(COST).sub(listGasUsed);
+
+      expect(finalBalance).to.equal(expectedBalance);
     });
 
     it("Emits a Buy event", async () => {
       expect(transaction).to.emit(dappazon, 'Buy');
     });
     
-    describe("Withdrawing", () => {
-      let balanceBefore
-  
-      beforeEach(async () => {
-        // List a item
-        let transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK)
-        await transaction.wait()
-  
-        // Buy a item
-        transaction = await dappazon.connect(buyer).buy(ID, { value: COST })
-        await transaction.wait()
-  
-        // Get Deployer balance before
-        balanceBefore = await ethers.provider.getBalance(deployer.address)
-  
-        // Withdraw
-        transaction = await dappazon.connect(deployer).withdraw()
-        await transaction.wait()
-      })
-  
-      it('Updates the owner balance', async () => {
-        const balanceAfter = await ethers.provider.getBalance(deployer.address)
-        expect(balanceAfter).to.be.greaterThan(balanceBefore)
-      })
-  
-      it('Updates the contract balance', async () => {
-        const result = await ethers.provider.getBalance(dappazon.address)
-        expect(result).to.equal(0)
-      })
-    })
   })
 })
