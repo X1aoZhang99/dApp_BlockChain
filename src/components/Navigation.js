@@ -1,10 +1,14 @@
 import { ethers } from 'ethers'
+import { useState } from 'react'
 
 const Navigation = ({ account, setAccount }) => {
+    const [accName, setAccName] = useState('Connect')
+
     const connectHandler = async () => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = ethers.utils.getAddress(accounts[0])
         setAccount(account);
+        setAccName(account.slice(0, 6) + '...' + account.slice(38, 42))
     }
 
     return (
@@ -23,7 +27,7 @@ const Navigation = ({ account, setAccount }) => {
                     type="button"
                     className='nav__connect'
                 >
-                    {account.slice(0, 6) + '...' + account.slice(38, 42)}
+                    {accName}
                 </button>
             ) : (
                 <button
