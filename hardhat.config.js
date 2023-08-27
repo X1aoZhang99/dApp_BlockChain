@@ -1,5 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
-const GOERLI_TESTNET_PRIVATE_KEY = 'fea80bc4aa399e14490968adb065d69825f112a2a4d37a754a9624f7638ae52e'
+const GOERLI_TESTNET_PRIVATE_KEY = ''
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   // solidity: "0.8.17",
